@@ -2,21 +2,26 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: app
+  name: web
   namespace: egs-conv
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: app
+      app: web
   template:
     metadata:
       labels:
-        app: app
+        app: web
     spec:
       containers:
-      - name: app
+      - name: web
         image: registry.deti:5000/egs-conv/web-service:v1
+        env:
+          - name: REACT_APP_PROXY_URL
+            value: http://traefik:80
+          - name: APP_COOKIE_NAME
+            value: MY_SUPER_COOOKIE
         resources:
           requests:
             memory: "32Mi"
@@ -45,6 +50,26 @@ spec:
       containers:
       - name: composer
         image: registry.deti:5000/egs-conv/composer-service:v1
+        env:
+          - name: PYTHONPATH
+            value: /home/app
+        envFrom:
+          - secretRef:
+              name: activemq-secrets
+          - secretRef:
+              name: mysql-secrets
+          - secretRef:
+              name: auth0-secrets
+          - secretRef:
+              name: composer-secrets
+          - configMapRef:
+              name: activemq-configmap
+          - configMapRef:
+              name: mysql-configmap
+          - configMapRef:
+              name: auth0-configmap
+          - configMapRef:
+              name: composer-configmap
         resources:
           requests:
             memory: "32Mi"
@@ -53,7 +78,7 @@ spec:
             memory: "128Mi"
             cpu: "500m"
         ports:
-        - containerPort: 8888
+        - containerPort: 8888        
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -73,6 +98,9 @@ spec:
       containers:
       - name: conversion
         image: registry.deti:5000/egs-conv/conversion-service:v1
+        env:
+          - name: PYTHONPATH
+            value: /home/app
         resources:
           requests:
             memory: "32Mi"
@@ -80,6 +108,13 @@ spec:
           limits:
             memory: "128Mi"
             cpu: "500m"
+      volumes:
+        - name: activemq-secrets
+          secret:
+            secretName: activemq-secrets
+        - name: activemq-configmap
+          configMap:
+            name: activemq-configmap
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -106,6 +141,22 @@ spec:
           limits:
             memory: "128Mi"
             cpu: "500m"
+      volumes:
+        - name: localstack-secrets
+          secret:
+            secretName: localstack-secrets
+        - name: activemq-secrets
+          secret:
+            secretName: activemq-secrets
+        - name: localstack-configmap
+          configMap:
+            name: localstack-configmap
+        - name: activemq-configmap
+          configMap:
+            name: activemq-configmap
+        - name: s3connector-configmap
+          configMap:
+            name: s3connector-configmap
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -132,23 +183,36 @@ spec:
           limits:
             memory: "128Mi"
             cpu: "500m"
+      volumes:
+        - name: localstack-secrets
+          secret:
+            secretName: localstack-secrets
+        - name: activemq-secrets
+          secret:
+            secretName: activemq-secrets
+        - name: localstack-configmap
+          configMap:
+            name: localstack-configmap
+        - name: activemq-configmap
+          configMap:
+            name: activemq-configmap
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: app
+  name: gateway
   namespace: egs-conv
 spec:
   ports:
   - port: 80
     targetPort: 8000
   selector:
-    app: app
+    app: web
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: app-k3s
+  name: traefik # app-k3s
   namespace: egs-conv
   annotations:
     kubernetes.io/ingress.class: traefik
@@ -164,7 +228,7 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: app
+            name: gateway
             port: 
               number: 80
 ---

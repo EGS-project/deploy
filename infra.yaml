@@ -2,21 +2,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: app
+  name: mysql
   namespace: egs-conv
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: app
+      app: mysql
   template:
     metadata:
       labels:
-        app: app
+        app: mysql
     spec:
       containers:
-      - name: app
-        image: registry.deti:5000/egs-conv/web-service:v1
+      - name: mysql
+        image: mysql/mysql-server:8.0
         resources:
           requests:
             memory: "32Mi"
@@ -25,26 +25,34 @@ spec:
             memory: "128Mi"
             cpu: "500m"
         ports:
-        - containerPort: 8000
+        - containerPort: 3306
+      #   volumeMounts:
+      #   - name: mysql-config-volume
+      #     mountPath: /docker-entrypoint-initdb.d/data.sql
+      # volumes:
+      # - name: mysql-config-volume
+      #   hostPath:
+      #     path: ./mysql/config.sql
+      #     type: File
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: composer
+  name: mysql
   namespace: egs-conv
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: composer
+      app: mysql
   template:
     metadata:
       labels:
-        app: composer
+        app: mysql
     spec:
       containers:
-      - name: composer
-        image: registry.deti:5000/egs-conv/composer-service:v1
+      - name: mysql
+        image: mysql/mysql-server:8.0
         resources:
           requests:
             memory: "32Mi"
@@ -53,118 +61,5 @@ spec:
             memory: "128Mi"
             cpu: "500m"
         ports:
-        - containerPort: 8888
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: conversion
-  namespace: egs-conv
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: conversion
-  template:
-    metadata:
-      labels:
-        app: conversion
-    spec:
-      containers:
-      - name: conversion
-        image: registry.deti:5000/egs-conv/conversion-service:v1
-        resources:
-          requests:
-            memory: "32Mi"
-            cpu: "10m"
-          limits:
-            memory: "128Mi"
-            cpu: "500m"
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: s3connector
-  namespace: egs-conv
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: s3connector
-  template:
-    metadata:
-      labels:
-        app: s3connector
-    spec:
-      containers:
-      - name: s3connector
-        image: registry.deti:5000/egs-conv/s3connector-service:v1
-        resources:
-          requests:
-            memory: "32Mi"
-            cpu: "10m"
-          limits:
-            memory: "128Mi"
-            cpu: "500m"
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: notification
-  namespace: egs-conv
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: notification
-  template:
-    metadata:
-      labels:
-        app: notification
-    spec:
-      containers:
-      - name: notification
-        image: registry.deti:5000/egs-conv/notification-service:v1
-        resources:
-          requests:
-            memory: "32Mi"
-            cpu: "10m"
-          limits:
-            memory: "128Mi"
-            cpu: "500m"
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: app
-  namespace: egs-conv
-spec:
-  ports:
-  - port: 80
-    targetPort: 8000
-  selector:
-    app: app
----
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: app-k3s
-  namespace: egs-conv
-  annotations:
-    kubernetes.io/ingress.class: traefik
-    traefik.ingress.kubernetes.io/frontend-entry-points: http,https
-    traefik.ingress.kubernetes.io/redirect-entry-point: https
-    traefik.ingress.kubernetes.io/redirect-permanent: "true"
-spec:
-  rules:
-  - host: app-egs-conv.k3s
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: app
-            port: 
-              number: 80
+        - containerPort: 3306
 ---
