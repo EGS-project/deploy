@@ -38,6 +38,39 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  name: activemq
+  namespace: egs-conv
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: activemq
+  template:
+    metadata:
+      labels:
+        app: activemq
+    spec:
+      containers:
+      - name: activemq
+        image: rmohr/activemq:5.15.9
+        envFrom:
+          - secretRef:
+              name: activemq-secrets
+        resources:
+          requests:
+            memory: "32Mi"
+            cpu: "10m"
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 8161
+        - containerPort: 61616
+        - containerPort: 61613
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
   name: localstack
   spec:
     replicas: 1
