@@ -38,21 +38,24 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: mysql
+  name: activemq
   namespace: egs-conv
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: mysql
+      app: activemq
   template:
     metadata:
       labels:
-        app: mysql
+        app: activemq
     spec:
       containers:
-      - name: mysql
-        image: mysql/mysql-server:8.0
+      - name: activemq
+        image: rmohr/activemq:5.15.9
+        envFrom:
+          - secretRef:
+              name: activemq-secrets
         resources:
           requests:
             memory: "32Mi"
@@ -61,5 +64,8 @@ spec:
             memory: "128Mi"
             cpu: "500m"
         ports:
-        - containerPort: 3306
+        - containerPort: 8161
+        - containerPort: 61616
+        - containerPort: 61613
+
 ---
