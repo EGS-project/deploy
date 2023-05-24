@@ -38,28 +38,49 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: mysql
-  namespace: egs-conv
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: mysql
-  template:
-    metadata:
-      labels:
-        app: mysql
-    spec:
-      containers:
-      - name: mysql
-        image: mysql/mysql-server:8.0
-        resources:
-          requests:
-            memory: "32Mi"
-            cpu: "10m"
-          limits:
-            memory: "128Mi"
-            cpu: "500m"
-        ports:
-        - containerPort: 3306
+  name: localstack
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        app: localstack
+    template:
+      metadata:
+        labels:
+          app: localstack
+      spec:
+        containers:
+          - name: localstack
+            image: localstack/localstack-pro
+            ports:
+              - containerPort: 4566  # LocalStack Gateway
+              - containerPort: 4510-4559  # External services port range
+              - containerPort: 53  # DNS config (required for Pro)
+              - containerPort: 443  # LocalStack HTTPS Gateway (required for Pro)
+            env:
+              - name: DEBUG
+                value: "${DEBUG-}"
+              - name: PERSISTENCE
+                value: "${PERSISTENCE-}"
+              - name: LAMBDA_EXECUTOR
+                value: "${LAMBDA_EXECUTOR-}"
+              - name: DOCKER_HOST
+                value: "unix:///var/run/docker.sock"
+            envFrom:
+              - secretRef:
+                  name: localstack-secrets
+              - configMapRef:
+                  name: localstack-configmap
+            volumeMounts:
+              - name: localstack-volume
+                mountPath: /var/lib/localstack
+              - name: docker-socket
+                mountPath: /var/run/docker.sock
+        volumes:
+          - name: localstack-volume
+            hostPath:
+              path: "${LOCALSTACK_VOLUME_DIR:-./volume}"
+          - name: docker-socket
+            hostPath:
+              path: /var/run/docker.sock
 ---
