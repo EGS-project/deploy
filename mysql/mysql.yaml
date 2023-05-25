@@ -1,0 +1,43 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql-deployment
+  namespace: egs-conv
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mysql-deployment
+  template:
+    metadata:
+      labels:
+        app: mysql-deployment
+    spec:
+      containers:
+      - name: mysql-deployment
+        stdin: true
+        tty: true
+        image: mysql/mysql-server:8.0
+        resources:
+          requests:
+            memory: "32Mi"
+            cpu: "10m"
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 3306
+      # how to bind mysql config file so its loaded on container start???
+      # in docker-compose it was working just to mount the config file as a File
+      # so every script from the directory  /docker-entrypoint-initdb.d/ was executed automatically
+      # One solution would be to create our own mysql dockerfile with this file already inside
+      # but how to do it from kubernetes, so we have more flexibility over it?
+      #   volumeMounts: 
+      #   - name: mysql-config-volume
+      #     mountPath: /docker-entrypoint-initdb.d/data.sql
+      # volumes:
+      # - name: mysql-config-volume
+      #   hostPath:
+      #     path: ./mysql/config.sql
+      #     type: File
