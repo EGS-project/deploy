@@ -1,0 +1,52 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: activemq-deployment
+  namespace: egs-conv
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: activemq-deployment
+  template:
+    metadata:
+      labels:
+        app: activemq-deployment
+    spec:
+      containers:
+      - name: activemq-deployment
+        stdin: true
+        tty: true
+        image: rmohr/activemq:5.15.9
+        envFrom:
+          - secretRef:
+              name: activemq-secrets
+        resources:
+          requests:
+            memory: "32Mi"
+            cpu: "10m"
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 8161
+        - containerPort: 61616
+        - containerPort: 61613
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: activemq-service
+  namespace: egs-conv
+spec:
+  ports:
+  - port: 8161
+    targetPort: 8161
+  - port: 61613
+    targetPort: 61613
+  - port: 61616
+    targetPort: 61616
+  selector:
+    app: activemq-deployment
+---

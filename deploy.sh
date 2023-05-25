@@ -20,5 +20,7 @@ kubectl create configmap s3connector-configmap --from-env-file=s3connector/s3con
 
 
 # apply deploy
-kubectl apply -f infra.yaml
-# kubectl apply -f mvp.yaml
+kubectl apply -f activemq/activemq.yaml
+kubectl apply -f mysql/mysql.yaml
+# be careful with running this because we have traffic limit from localstack Free but Pro tier...
+# kubectl apply -f localstack/localstack.yaml
