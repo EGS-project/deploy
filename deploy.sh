@@ -1,4 +1,4 @@
-#! /bin/sh -eux
+#! /bin/sh
 NAMESPACE=egs-conv
 
 # load secrets
