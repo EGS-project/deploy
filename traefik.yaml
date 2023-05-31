@@ -1,0 +1,47 @@
+# ---
+# apiVersion: networking.k8s.io/v1
+# kind: Ingress
+# metadata:
+#   name: traefik # app-k3s
+#   namespace: egs-conv
+#   annotations:
+#     kubernetes.io/ingress.class: traefik
+#     traefik.ingress.kubernetes.io/frontend-entry-points: http,https
+#     traefik.ingress.kubernetes.io/redirect-entry-point: https
+#     traefik.ingress.kubernetes.io/redirect-permanent: "true"
+# spec:
+#   rules:
+#   - host: app-egs-conv.k3s
+#     http:
+#       paths:
+#       - path: /
+#         pathType: Prefix
+#         backend:
+#           service:
+#             name: gateway
+#             port: 
+#               number: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: traefic-localstack
+  namespace: egs-conv
+  annotations:
+    kubernetes.io/ingress.class: traefik
+    traefik.ingress.kubernetes.io/frontend-entry-points: http,https
+    traefik.ingress.kubernetes.io/redirect-entry-point: https
+    traefik.ingress.kubernetes.io/redirect-permanent: "true"
+spec:
+  rules:
+    - host: localstack-ingress # ?
+      http: # maybe https ?
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: localstack-service
+                port:
+                  number: 443
+---

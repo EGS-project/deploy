@@ -18,6 +18,6 @@ kubectl delete configmap mysql-configmap -n egs-conv
 kubectl delete configmap s3connector-configmap -n egs-conv 
 
 # delete deploy
-kubectl apply -f activemq/activemq.yaml
-kubectl apply -f mysql/mysql.yaml
-kubectl apply -f localstack/localstack.yaml
+kubectl apply -f traefik.yaml
+# kubectl apply -f application.yaml
+kubectl apply -f infrastructure.yaml
