@@ -16,8 +16,6 @@ spec:
       containers:
       - name: composer-deployment
         image: registry.deti:5000/egs-conv/composer-service:v1
-        # command: ["python3", "debug.py"]
-        command: ["bash", "-c", "ls -la && python debug.py && python src/main.py"]
         env:
           - name: PYTHONPATH
             value: /home/app
@@ -48,13 +46,13 @@ spec:
         ports:
         - containerPort: 8888        
         volumeMounts:
-          - name: composer-debug-conf-vol
-            mountPath: /home/app/debug.py
-            subPath: debug.py
+          - name: app-ndots-vol
+            mountPath: /etc/resolv.conf
+            subPath: resolv.conf
       volumes:
-        - name: composer-debug-conf-vol
+        - name: app-ndots-vol
           configMap:
-            name: composer-debug-conf
+            name: app-ndots-configmap
 ---
 apiVersion: v1
 kind: Service
@@ -65,6 +63,7 @@ spec:
   ports:
   - name: http
     port: 8888
+    targetPort: 80
   selector:
     app: composer-deployment
 ---

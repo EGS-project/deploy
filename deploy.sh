@@ -18,6 +18,7 @@ kubectl create configmap conversion-configmap --from-env-file=conversion/convers
 kubectl create configmap s3connector-configmap --from-env-file=s3connector/s3connector-configmap.env -n ${NAMESPACE}
 kubectl apply -f mysql/mysql-db-configmap.yaml -n ${NAMESPACE}
 kubectl apply -f localstack/resolv-configmap.yaml -n ${NAMESPACE}
+kubectl apply -f app_ndots/app-ndots-configmap.yaml -n ${NAMESPACE}
 
 
 # deploy infrastructure

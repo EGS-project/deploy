@@ -12,14 +12,14 @@ metadata:
     # ingress.kubernetes.io/ssl-redirect: "false"
 spec:
   rules:
-  - http:
-      paths:
-      - path: /v1/events
-        pathType: Prefix
-        backend:
-          service:
-            name: localstack-service
-            port:
-              number: 4566
-        
+    - host: egs-conv.deti
+      http:
+        paths: 
+          - path: /docs
+            pathType: Prefix
+            backend:
+              service:
+                name: composer-service
+                port:
+                  number: 8888
 ---
