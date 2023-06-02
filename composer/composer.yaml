@@ -1,0 +1,70 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: composer-deployment
+  namespace: egs-conv
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: composer-deployment
+  template:
+    metadata:
+      labels:
+        app: composer-deployment
+    spec:
+      containers:
+      - name: composer-deployment
+        image: registry.deti:5000/egs-conv/composer-service:v1
+        # command: ["python3", "debug.py"]
+        command: ["bash", "-c", "ls -la && python debug.py && python src/main.py"]
+        env:
+          - name: PYTHONPATH
+            value: /home/app
+        envFrom:
+          - secretRef:
+              name: activemq-secrets
+          - secretRef:
+              name: mysql-secrets
+          - secretRef:
+              name: auth0-secrets
+          - secretRef:
+              name: composer-secrets
+          - configMapRef:
+              name: activemq-configmap
+          - configMapRef:
+              name: mysql-configmap
+          - configMapRef:
+              name: auth0-configmap
+          - configMapRef:
+              name: composer-configmap
+        resources:
+          requests:
+            memory: "32Mi"
+            cpu: "10m"
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 8888        
+        volumeMounts:
+          - name: composer-debug-conf-vol
+            mountPath: /home/app/debug.py
+            subPath: debug.py
+      volumes:
+        - name: composer-debug-conf-vol
+          configMap:
+            name: composer-debug-conf
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: composer-service
+  namespace: egs-conv
+spec:
+  ports:
+  - name: http
+    port: 8888
+  selector:
+    app: composer-deployment
+---

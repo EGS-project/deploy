@@ -41,12 +41,17 @@ metadata:
   namespace: egs-conv
 spec:
   ports:
-  - port: 8161
+  - name: web-console
+    port: 8161
     targetPort: 8161
-  - port: 61613
+  - name: client-messages-open-wire
+    port: 61613
     targetPort: 61613
-  - port: 61616
+  - name: amqp
+    port: 61616
     targetPort: 61616
   selector:
     app: activemq-deployment
 ---
+# cheat sheet
+# ./access.sh activemq
