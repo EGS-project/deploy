@@ -16,10 +16,10 @@ spec:
     spec:
       containers:
       - name: web-deployment
-        image: registry.deti:5000/egs-conv/web-service:v1
+        image: registry.deti:5000/egs-conv/web-service:latest
         env:
           - name: REACT_APP_PROXY_URL
-            value: http://traefik:80
+            value: http://egs-conv.deti
           - name: APP_COOKIE_NAME
             value: MY_SUPER_COOOKIE
         resources:
@@ -31,6 +31,14 @@ spec:
             cpu: "500m"
         ports:
         - containerPort: 8000
+        volumeMounts:
+          - name: ndots-vol
+            mountPath: /etc/resolv.conf
+            subPath: resolv.conf
+      volumes:
+        - name: ndots-vol
+          configMap:
+            name: web-ndots-configmap
 ---
 apiVersion: v1
 kind: Service
@@ -40,7 +48,10 @@ metadata:
 spec:
   ports:
   - name: http
-    port: 8000
+    port: 80
+    targetPort: 8000
   selector:
     app: web-deployment
 ---
+# cheat sheet
+# nc -zvv composer-service.egs-conv.svc.cluster.local 80

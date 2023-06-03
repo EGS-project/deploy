@@ -1,4 +1,4 @@
-#!/bin/bshsh 
+#!/bin/bash
 TRAEFIK_NAMESPACE=kube-system
 TRAEFIK_APP=traefik-7c684877b7-fk5pl
 PROJECT_NAMESPACE=egs-conv

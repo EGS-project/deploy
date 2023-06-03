@@ -16,9 +16,11 @@ kubectl delete configmap auth0-configmap -n ${NAMESPACE}
 kubectl delete configmap composer-configmap -n ${NAMESPACE} 
 kubectl delete configmap conversion-configmap -n ${NAMESPACE} 
 kubectl delete configmap s3connector-configmap -n ${NAMESPACE} 
-kubectl delete configmap resolv-configmap -n ${NAMESPACE}
 kubectl delete configmap mysql-db-configmap -n ${NAMESPACE}
-kubectl delete configmap app-ndots-configmap -n ${NAMESPACE}
+
+kubectl delete configmap localstack-ndots-configmap -n ${NAMESPACE}
+kubectl delete configmap composer-ndots-configmap -n ${NAMESPACE}
+kubectl delete configmap web-ndots-configmap -n ${NAMESPACE}
 
 # delete infrastructure
 kubectl delete -f localstack/localstack.yaml

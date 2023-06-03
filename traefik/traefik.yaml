@@ -9,17 +9,50 @@ metadata:
     traefik.ingress.kubernetes.io/frontend-entry-points: http,https
     traefik.ingress.kubernetes.io/redirect-entry-point: https
     traefik.ingress.kubernetes.io/redirect-permanent: "true"
+    traefik.ingress.kubernetes.io/custom-request-headers: "Access-Control-Allow-Origin:*||Access-Control-Allow-Methods:DELETE, GET, HEAD, OPTIONS, PATCH, POST, PUT||Access-Control-Allow-Headers:access-control-allow-credentials,access-control-allow-headers,access-control-allow-origin,auth,content-type||Access-Control-Expose-Headers:access-control-allow-credentials,access-control-allow-headers,access-control-allow-origin,auth,content-type"
+    traefik.ingress.kubernetes.io/custom-response-headers: "Access-Control-Allow-Origin:*||Access-Control-Allow-Methods:DELETE, GET, HEAD, OPTIONS, PATCH, POST, PUT||Access-Control-Allow-Headers:access-control-allow-credentials,access-control-allow-headers,access-control-allow-origin,auth,content-type||Access-Control-Expose-Headers:access-control-allow-credentials,access-control-allow-headers,access-control-allow-origin,auth,content-type"
+
     # ingress.kubernetes.io/ssl-redirect: "false"
 spec:
   rules:
     - host: egs-conv.deti
       http:
-        paths: 
-          - path: /docs
+        paths:
+          - path: /api/v1/auth
+            pathType: Prefix
+            backend:
+              service:
+                name:  composer-service
+                port:
+                  number: 8888
+          - path: /api/v1/convert
+            pathType: Exact
+            backend:
+              service:
+                name: composer-service
+                port:
+                  number: 8888
+          - path: /api/v1/login
+            pathType: Exact
+            backend:
+              service:
+                name:  composer-service
+                port:
+                  number: 8888
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: web-service
+                port:
+                  number: 80
+    - host: dev-6yrsvl7xxslz1azm.us.auth0.com
+      http:
+        paths:
+          - path: /
             pathType: Prefix
             backend:
               service:
                 name: composer-service
                 port:
                   number: 8888
----

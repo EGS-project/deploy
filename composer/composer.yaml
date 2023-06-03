@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: composer-deployment
-        image: registry.deti:5000/egs-conv/composer-service:v1
+        image: registry.deti:5000/egs-conv/composer-service:latest
         env:
           - name: PYTHONPATH
             value: /home/app
@@ -46,13 +46,13 @@ spec:
         ports:
         - containerPort: 8888        
         volumeMounts:
-          - name: app-ndots-vol
+          - name: ndots-vol
             mountPath: /etc/resolv.conf
             subPath: resolv.conf
       volumes:
-        - name: app-ndots-vol
+        - name: ndots-vol
           configMap:
-            name: app-ndots-configmap
+            name: composer-ndots-configmap
 ---
 apiVersion: v1
 kind: Service
@@ -63,7 +63,7 @@ spec:
   ports:
   - name: http
     port: 8888
-    targetPort: 80
+    targetPort: 8888
   selector:
     app: composer-deployment
 ---

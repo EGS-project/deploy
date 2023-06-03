@@ -1,15 +1,16 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: app-ndots-configmap
+  name: localstack-ndots-configmap
   namespace: egs-conv
 data:
   resolv.conf: |
-    options ndots:1
-    nameserver 10.43.0.10
+    options ndots:2
+    nameserver 10.110.1.254
     nameserver 8.8.4.4
     nameserver 8.8.8.8
     nameserver 192.168.227.21
     nameserver 192.168.227.20
-    search ua.pt egs-conv.svc.cluster.local svc.cluster.local cluster.local deti
+    search ua.pt
+
 

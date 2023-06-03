@@ -39,13 +39,13 @@ spec:
           - containerPort: 53  # DNS config (required for Pro)
           - containerPort: 443  # LocalStack HTTPS Gateway (required for Pro)
         volumeMounts:
-          - name: resolv-conf-vol
+          - name: ndots-vol
             mountPath: /etc/resolv.conf
             subPath: resolv.conf
       volumes:
-        - name: resolv-conf-vol
+        - name: ndots-vol
           configMap:
-            name: resolv-configmap
+            name: localstack-ndots-configmap
 ---
 apiVersion: v1
 kind: Service
