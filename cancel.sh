@@ -21,6 +21,9 @@ kubectl delete configmap mysql-db-configmap -n ${NAMESPACE}
 kubectl delete configmap localstack-ndots-configmap -n ${NAMESPACE}
 kubectl delete configmap composer-ndots-configmap -n ${NAMESPACE}
 kubectl delete configmap web-ndots-configmap -n ${NAMESPACE}
+kubectl delete configmap conversion-ndots-configmap -n ${NAMESPACE}
+kubectl delete configmap s3connector-ndots-configmap -n ${NAMESPACE}
+kubectl delete configmap notification-ndots-configmap -n ${NAMESPACE}
 
 # delete infrastructure
 kubectl delete -f localstack/localstack.yaml

@@ -15,10 +15,15 @@ spec:
     spec:
       containers:
       - name: conversion-deployment
-        image: registry.deti:5000/egs-conv/conversion-service:v1
+        image: registry.deti:5000/egs-conv/conversion-service:latest
         env:
           - name: PYTHONPATH
             value: /home/app
+        envFrom:
+          - secretRef:
+              name: activemq-secrets
+          - configMapRef:
+              name: activemq-configmap
         resources:
           requests:
             memory: "32Mi"
@@ -26,13 +31,14 @@ spec:
           limits:
             memory: "128Mi"
             cpu: "500m"
+        volumeMounts:
+          - name: ndots-vol
+            mountPath: /etc/resolv.conf
+            subPath: resolv.conf
       volumes:
-        - name: activemq-secrets
-          secret:
-            secretName: activemq-secrets
-        - name: activemq-configmap
+        - name: ndots-vol
           configMap:
-            name: activemq-configmap
+            name: conversion-ndots-configmap
 ---
 apiVersion: v1
 kind: Service

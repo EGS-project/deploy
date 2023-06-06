@@ -11,7 +11,6 @@ metadata:
     traefik.ingress.kubernetes.io/redirect-permanent: "true"
     traefik.ingress.kubernetes.io/custom-request-headers: "Access-Control-Allow-Origin:*||Access-Control-Allow-Methods:DELETE, GET, HEAD, OPTIONS, PATCH, POST, PUT||Access-Control-Allow-Headers:access-control-allow-credentials,access-control-allow-headers,access-control-allow-origin,auth,content-type||Access-Control-Expose-Headers:access-control-allow-credentials,access-control-allow-headers,access-control-allow-origin,auth,content-type"
     traefik.ingress.kubernetes.io/custom-response-headers: "Access-Control-Allow-Origin:*||Access-Control-Allow-Methods:DELETE, GET, HEAD, OPTIONS, PATCH, POST, PUT||Access-Control-Allow-Headers:access-control-allow-credentials,access-control-allow-headers,access-control-allow-origin,auth,content-type||Access-Control-Expose-Headers:access-control-allow-credentials,access-control-allow-headers,access-control-allow-origin,auth,content-type"
-
     # ingress.kubernetes.io/ssl-redirect: "false"
 spec:
   rules:
@@ -46,6 +45,7 @@ spec:
                 name: web-service
                 port:
                   number: 80
+            
     - host: dev-6yrsvl7xxslz1azm.us.auth0.com
       http:
         paths:

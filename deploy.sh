@@ -21,6 +21,9 @@ kubectl apply -f mysql/mysql-db-configmap.yaml -n ${NAMESPACE}
 kubectl apply -f dns_configs/localstack-ndots-configmap.yaml -n ${NAMESPACE}
 kubectl apply -f dns_configs/composer-ndots-configmap.yaml -n ${NAMESPACE}
 kubectl apply -f dns_configs/web-ndots-configmap.yaml -n ${NAMESPACE}
+kubectl apply -f dns_configs/conversion-ndots-configmap.yaml -n ${NAMESPACE}
+kubectl apply -f dns_configs/s3connector-ndots-configmap.yaml -n ${NAMESPACE}
+kubectl apply -f dns_configs/notification-ndots-configmap.yaml -n ${NAMESPACE}
 
 
 # deploy infrastructure

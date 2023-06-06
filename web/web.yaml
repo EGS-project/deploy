@@ -22,6 +22,8 @@ spec:
             value: http://egs-conv.deti
           - name: APP_COOKIE_NAME
             value: MY_SUPER_COOOKIE
+          - name: WDS_SOCKET_PORT
+            value: "0"
         resources:
           requests:
             memory: "32Mi"

@@ -15,7 +15,16 @@ spec:
     spec:
       containers:
       - name: s3connector-deployment
-        image: registry.deti:5000/egs-conv/s3connector-service:v1
+        image: registry.deti:5000/egs-conv/s3connector-service:latest
+        envFrom:
+          - secretRef:
+              name: activemq-secrets
+          - configMapRef:
+              name: activemq-configmap
+          - secretRef:
+              name: localstack-secrets
+          - configMapRef:
+              name: localstack-configmap
         resources:
           requests:
             memory: "32Mi"
@@ -23,22 +32,14 @@ spec:
           limits:
             memory: "128Mi"
             cpu: "500m"
+        volumeMounts:
+          - name: ndots-vol
+            mountPath: /etc/resolv.conf
+            subPath: resolv.conf
       volumes:
-        - name: localstack-secrets
-          secret:
-            secretName: localstack-secrets
-        - name: activemq-secrets
-          secret:
-            secretName: activemq-secrets
-        - name: localstack-configmap
+        - name: ndots-vol
           configMap:
-            name: localstack-configmap
-        - name: activemq-configmap
-          configMap:
-            name: activemq-configmap
-        - name: s3connector-configmap
-          configMap:
-            name: s3connector-configmap
+            name: s3connector-ndots-configmap
 ---
 apiVersion: v1
 kind: Service
