@@ -20,8 +20,10 @@ spec:
         env:
           - name: REACT_APP_PROXY_URL
             value: http://egs-conv.deti
-          - name: APP_COOKIE_NAME
+          - name: REACT_APP_COOKIE_NAME
             value: MY_SUPER_COOOKIE
+          - name: REACT_APP_COOKIE_DOMAIN
+            value: .egs-conv.deti
           - name: WDS_SOCKET_PORT
             value: "0"
         resources:

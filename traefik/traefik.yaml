@@ -17,25 +17,11 @@ spec:
     - host: egs-conv.deti
       http:
         paths:
-          - path: /api/v1/auth
+          - path: /api/v1
             pathType: Prefix
             backend:
               service:
-                name:  composer-service
-                port:
-                  number: 8888
-          - path: /api/v1/convert
-            pathType: Exact
-            backend:
-              service:
                 name: composer-service
-                port:
-                  number: 8888
-          - path: /api/v1/login
-            pathType: Exact
-            backend:
-              service:
-                name:  composer-service
                 port:
                   number: 8888
           - path: /
@@ -45,7 +31,7 @@ spec:
                 name: web-service
                 port:
                   number: 80
-            
+
     - host: dev-6yrsvl7xxslz1azm.us.auth0.com
       http:
         paths:
@@ -56,3 +42,37 @@ spec:
                 name: composer-service
                 port:
                   number: 8888
+
+    - host: egs-conv-broker.deti
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: activemq-service
+                port:
+                  number: 80
+
+    - host: egs-conv-localstack.deti
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: localstack-service
+                port:
+                  number: 4566
+
+    - host: egs-conv-grafana.deti
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: grafana
+                port:
+                  number: 3000
+
