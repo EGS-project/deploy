@@ -1,0 +1,78 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: egs-conv-ingress
+  namespace: egs-conv
+  annotations:
+    kubernetes.io/ingress.class: traefik
+    traefik.ingress.kubernetes.io/frontend-entry-points: http,https
+    traefik.ingress.kubernetes.io/redirect-entry-point: https
+    traefik.ingress.kubernetes.io/redirect-permanent: "true"
+    traefik.ingress.kubernetes.io/custom-request-headers: "Access-Control-Allow-Origin:https://dev-6yrsvl7xxslz1azm.us.auth0.com, https://dev-6yrsvl7xxslz1azm.us.auth0.com/*, http://egs-conv.deti, http://egs-conv.deti/* || Access-Control-Allow-Methods:DELETE, GET, HEAD, OPTIONS, PATCH, POST, PUT||Access-Control-Allow-Headers:access-control-allow-credentials,access-control-allow-headers,access-control-allow-origin,auth,content-type||Access-Control-Expose-Headers:access-control-allow-credentials,access-control-allow-headers,access-control-allow-origin,auth,content-type"
+    traefik.ingress.kubernetes.io/custom-response-headers: "Access-Control-Allow-Origin:https://dev-6yrsvl7xxslz1azm.us.auth0.com, https://dev-6yrsvl7xxslz1azm.us.auth0.com/*, http://egs-conv.deti, http://egs-conv.deti/* || Access-Control-Allow-Methods:DELETE, GET, HEAD, OPTIONS, PATCH, POST, PUT||Access-Control-Allow-Headers:access-control-allow-credentials,access-control-allow-headers,access-control-allow-origin,auth,content-type||Access-Control-Expose-Headers:access-control-allow-credentials,access-control-allow-headers,access-control-allow-origin,auth,content-type"
+    # ingress.kubernetes.io/ssl-redirect: "false"
+spec:
+  rules:
+    - host: egs-conv.deti
+      http:
+        paths:
+          - path: /api/v1
+            pathType: Prefix
+            backend:
+              service:
+                name: composer-service
+                port:
+                  number: 8888
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: web-service
+                port:
+                  number: 80
+
+    - host: dev-6yrsvl7xxslz1azm.us.auth0.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: composer-service
+                port:
+                  number: 8888
+
+    - host: egs-conv-broker.deti
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: activemq-service
+                port:
+                  number: 80
+
+    - host: egs-conv-localstack.deti
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: localstack-service
+                port:
+                  number: 4566
+
+    - host: egs-conv-grafana.deti
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: grafana
+                port:
+                  number: 3000
+

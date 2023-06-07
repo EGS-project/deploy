@@ -18,24 +18,17 @@ spec:
       - name: localstack-deployment
         stdin: true
         tty: true
-        image: localstack/localstack-pro
+        image: localstack/localstack-pro:2.0.2
+        command: ["/bin/bash", "-c", "ls -la /opt/code/localstack/.venv/lib/python3.10/site-packages/localstack_ext/aws && /usr/local/bin/docker-entrypoint.sh"]
         env:
-          - name: DEBUG
-            value: "1"
-          - name: SKIP_SSL_CERT_DOWNLOAD
-            value: "1"
-          - name: SKIP_INFRA_DOWNLOADS
-            value: "1"
-          - name: DISABLE_EVENTS
-            value: "1"
-          - name: LOCALSTACK_VOLUME_DIR
-            value: ./localstack/volume
           - name: EXTERNAL_SERVICE_PORTS_START
             value: "4510"
           - name: EXTERNAL_SERVICE_PORTS_END
-            value: "4559"
-          - name: DOCKER_HOST
-            value: unix:///var/run/docker.sock
+            value: "4560"
+          # - name: DOCKER_HOST
+          #   value: unix:///var/run/docker.sock
+          - name: ACTIVATE_PRO
+            value: "1"
         envFrom:
           - secretRef:
               name: localstack-secrets
@@ -45,23 +38,14 @@ spec:
           - containerPort: 4566  # LocalStack Gateway
           - containerPort: 53  # DNS config (required for Pro)
           - containerPort: 443  # LocalStack HTTPS Gateway (required for Pro)
-          # do we really need docker's socket volume for localstack?
-            # Short investigation shows that it is not strictly necessary
-            # Do we need this volume inside kubernetes?
-              # what was it used for in docker-compose, when it was working good?
-              # Decide if it is needed in order to run with our features (S3, SES).
-    #     volumeMounts:
-    #       - name: localstack-volume
-    #         mountPath: /var/lib/localstack
-    #       - name: docker-socket 
-    #         mountPath: /var/run/docker.sock
-      # volumes:
-      #   - name: localstack-volume
-      #     hostPath:
-      #       path: ./volume
-      #   - name: docker-socket
-      #     hostPath:
-      #       path: /var/run/docker.sock
+        volumeMounts:
+          - name: ndots-vol
+            mountPath: /etc/resolv.conf
+            subPath: resolv.conf
+      volumes:
+        - name: ndots-vol
+          configMap:
+            name: localstack-ndots-configmap
 ---
 apiVersion: v1
 kind: Service
@@ -70,31 +54,17 @@ metadata:
   namespace: egs-conv
 spec:
   ports:
-  - port: 443
+  - name: https-gateway-pro
+    port: 443
     targetPort: 443
+  - name: localstack-gateway
+    port: 4566
+    targetPort: 4566
+  - name: dns-config-pro
+    port: 53
+    targetPort: 53
   selector:
     app: localstack-deployment
 ---
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: traefic-localstack
-  namespace: egs-conv
-  annotations:
-    kubernetes.io/ingress.class: traefik
-    traefik.ingress.kubernetes.io/frontend-entry-points: http,https
-    traefik.ingress.kubernetes.io/redirect-entry-point: https
-    traefik.ingress.kubernetes.io/redirect-permanent: "true"
-spec:
-  rules:
-    - host: how to catch ingress traffic from app.localstack.cloud and route it to localstack-service # ?
-      http: # maybe https ?
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: localstack-service
-                port:
-                  number: 443
----
+# cheat sheet
+# ./access.sh localstack

@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: s3connector-deployment
+  namespace: egs-conv
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: s3connector-deployment
+  template:
+    metadata:
+      labels:
+        app: s3connector-deployment
+    spec:
+      containers:
+      - name: s3connector-deployment
+        image: registry.deti:5000/egs-conv/s3connector-service:latest
+        envFrom:
+          - secretRef:
+              name: activemq-secrets
+          - configMapRef:
+              name: activemq-configmap
+          - secretRef:
+              name: localstack-secrets
+          - configMapRef:
+              name: localstack-configmap
+        resources:
+          requests:
+            memory: "32Mi"
+            cpu: "10m"
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        volumeMounts:
+          - name: ndots-vol
+            mountPath: /etc/resolv.conf
+            subPath: resolv.conf
+      volumes:
+        - name: ndots-vol
+          configMap:
+            name: s3connector-ndots-configmap
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: s3connector-service
+  namespace: egs-conv
+spec:
+  ports:
+  - name: http
+    port: 80 # Required Value, not used
+  selector:
+    app: s3connector-deployment
+---

@@ -15,3 +15,4 @@ sample_images/reply.png
 *deploy.env
 volume/
 a.yaml
+localstack/pro-values.yaml

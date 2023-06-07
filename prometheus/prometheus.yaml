@@ -1,0 +1,50 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prometheus-deployment
+  namespace: egs-conv
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prometheus-deployment
+  template:
+    metadata:
+      labels:
+        app: prometheus-deployment
+    spec:
+      containers:
+      - name: prometheus-deployment
+        stdin: true
+        tty: true
+        image: prom/prometheus:latest
+        args:
+        - --config.file=/etc/prometheus/prometheus.yml
+        - --storage.tsdb.path=/prometheus
+        ports:
+        - containerPort: 9090
+        volumeMounts:
+        - name: data-vol
+          mountPath: /prometheus
+        - name: conf-vol
+          mountPath: /etc/prometheus/prometheus.yml
+      volumes:
+      - name: data-vol
+        emptyDir: {}
+      - name: conf-vol
+        configMap:
+          name: prometheus-configmap
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: prometheus-service
+  namespace: egs-conv
+spec:
+  ports:
+    - protocol: tcp
+      port: 9090
+      targetPort: 9090
+  selector:
+    app: prometheus-deployment

@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mysql-db-configmap
+  namespace: egs-conv
+data:
+  config.sql: |
+    GRANT ALL PRIVILEGES ON super_db.* TO 'admin'@'%';
+
