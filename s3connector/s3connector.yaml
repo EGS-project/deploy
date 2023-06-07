@@ -25,6 +25,8 @@ spec:
               name: localstack-secrets
           - configMapRef:
               name: localstack-configmap
+          - configMapRef:
+              name: s3connector-configmap
         resources:
           requests:
             memory: "32Mi"
